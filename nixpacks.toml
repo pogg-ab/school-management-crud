@@ -1,0 +1,8 @@
+[variables]
+    NIXPACKS_PHP_EXTENSIONS = 'intl, zip, pdo_mysql, bcmath, gd'
+
+[phases.setup]
+    nixPkgs = ['...', 'icu', 'libzip']
+
+[phases.build]
+    cmds = ['composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-intl --ignore-platform-req=ext-zip']
