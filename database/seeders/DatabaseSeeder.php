@@ -3,35 +3,47 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
-{
-    // 1. Create Admin
-    $admin = \App\Models\User::factory()->create([
-        'name' => 'Admin User',
-        'email' => 'admin@school.com',
-    ]);
-    $admin->assignRole('super_admin');
+    {
+        // Create Roles first to be safe
+        $adminRole = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
+        $teacherRole = Role::firstOrCreate(['name' => 'teacher', 'guard_name' => 'web']);
+        $studentRole = Role::firstOrCreate(['name' => 'student', 'guard_name' => 'web']);
 
-    // 2. Create Teacher
-    $teacher = \App\Models\User::factory()->create([
-        'name' => 'Mr. Teacher',
-        'email' => 'teacher@school.com',
-    ]);
-    $teacher->assignRole('teacher');
+        // 1. Create Admin
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@school.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+            ]
+        );
+        $admin->assignRole($adminRole);
 
-    // 3. Create Student
-    $student = \App\Models\User::factory()->create([
-        'name' => 'Student Alice',
-        'email' => 'student@school.com',
-    ]);
-    $student->assignRole('student');
-}
+        // 2. Create Teacher
+        $teacher = User::updateOrCreate(
+            ['email' => 'teacher@school.com'],
+            [
+                'name' => 'Mr. Teacher',
+                'password' => Hash::make('password'),
+            ]
+        );
+        $teacher->assignRole($teacherRole);
+
+        // 3. Create Student
+        $student = User::updateOrCreate(
+            ['email' => 'student@school.com'],
+            [
+                'name' => 'Student Alice',
+                'password' => Hash::make('password'),
+            ]
+        );
+        $student->assignRole($studentRole);
+    }
 }
